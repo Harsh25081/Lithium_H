@@ -12,8 +12,23 @@ const createOrder= async function (req, res) {
     if(!checkuserId){return res.send({"Error : ":" UserId is Invalid"})}
     else if(!checkproductId){return res.send({"Error : ":" ProductId is Invalid"})}
     else{
-        let savedData= await orderModel.create(body)
-        return res.send({data: savedData})
+        let isFreeAppUser = req.body.isFreeAppUser
+        if(isFreeAppUser){
+            req.body.amount = 0;
+            let savedData= await orderModel.create(body)
+            return res.send({data: savedData})
+        }else{
+            let checkdata = await productModel.findById(productId).select({price:1,_id:0})
+            let price = checkdata.price
+            let checkBalance = await userModel.findByIdAndUpdate({_id : userId},
+                {$inc:{balance:-price}},
+                {new:true}).select({balance:1,_id:0})
+            req.body.amount = price
+            let orderdata = await orderModel.create(body)
+            res.send({"msg":orderdata})
+        }
+
+        
     }
 }
 
