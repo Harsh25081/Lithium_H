@@ -1,6 +1,6 @@
 let axios = require("axios")
 
-
+//13d65059717bd0e32b78c58b6226a881
 const getByDistrictId = async function(req,res){
     try {
         let district_id = req.query.district_id 
